@@ -6,6 +6,8 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -30,12 +32,12 @@ public class Client extends JFrame{
     //constructor
     public Client() {
         try {
-            // System.out.println("Sending request to server...");
-            // socket = new Socket("127.0.0.1", 7777);
-            // System.out.println("Connection done...");
+            System.out.println("Sending request to server...");
+            socket = new Socket("127.0.0.1", 7777);
+            System.out.println("Connection done...");
 
-            // br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            // pout = new PrintWriter(socket.getOutputStream());
+            br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            pout = new PrintWriter(socket.getOutputStream());
 
             //Build GUI for client side
             createGUI();
@@ -44,7 +46,7 @@ public class Client extends JFrame{
             handleEvents();
 
             // Function for Read and write messages from server
-            // startReading();
+            startReading();
             // startWriting();
         } catch (Exception e) {
             e.printStackTrace();
@@ -70,7 +72,8 @@ public class Client extends JFrame{
         heading.setHorizontalAlignment(SwingConstants.CENTER);
         heading.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
 
-        //Set messageinput text to center position, border
+        ///Set messageinput text to center position and make messageArea input disabled
+        messagArea.setEditable(false);
         messageInput.setHorizontalAlignment(SwingConstants.CENTER);
 
         //Set frame layout
@@ -78,10 +81,43 @@ public class Client extends JFrame{
 
         //Adding the components to frame layout
         this.add(heading, BorderLayout.NORTH);
-        this.add(messagArea, BorderLayout.CENTER);
+        JScrollPane jScrollPane = new JScrollPane(messagArea);
+        this.add(jScrollPane, BorderLayout.CENTER);
         this.add(messageInput, BorderLayout.SOUTH);
 
         this.setVisible(true);
+    }
+
+    //Handle Events -- send the type message to body
+    public void handleEvents() {
+        messageInput.addKeyListener(new KeyListener(){
+
+            @Override
+            public void keyTyped(KeyEvent e) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                // TODO Auto-generated method stub
+                if(e.getKeyCode()==10)
+                {
+                    String contentToSend = messageInput.getText();
+                    messagArea.append("Me :" + contentToSend + "\n");
+                    pout.println(contentToSend);
+                    pout.flush();
+                    messageInput.setText("");
+                    messageInput.requestFocus();
+                }
+            } 
+        });
     }
 
     // Read the message from the server (Serversocket)
@@ -95,11 +131,13 @@ public class Client extends JFrame{
                 while (true) {
                     String msg = br.readLine();
                     if (msg.equals("exit")) {
-                        System.out.println("Server terminated the chat");
+                        JOptionPane.showMessageDialog(this, "Server terminated the chat");
+                        messageInput.setEnabled(false);
                         socket.close();
                         break;
                     }
-                    System.out.println("Server: " + msg);
+                    // System.out.println("Server: " + msg);
+                    messagArea.append("Server: " + msg + "\n");
                 }
             } catch (Exception e) {
                 // e.printStackTrace();
