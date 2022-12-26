@@ -37,22 +37,23 @@ class Server {
             System.out.println("Read the  message from the client...");
 
             // Read the infinit message from the client
-            while (true) {
-                try {
+            try {
+                while (true) {
                     String msg = br.readLine();
-                    if(msg.equals("exit")){
+                    if (msg.equals("exit")) {
                         System.out.println("Client terminated the chat");
+                        socket.close();
                         break;
                     }
-
-                    System.out.println("Client: " + msg);	
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    System.out.println("Client: " + msg);
                 }
+            } catch (Exception e) {
+                // e.printStackTrace();
+                System.out.println("Connection closed...!!!");
             }
         };
 
-        //Start the thread of startreading
+        // Start the thread of startreading
         Thread t1 = new Thread(r1);
         t1.start();
     }
@@ -65,25 +66,31 @@ class Server {
             System.out.println("Write the  message from the client...");
 
             // write the infinit message to the client
-            while (true) {
-                try {
-                        //Read the user data from console
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-                        String content = reader.readLine();
+            try {
+                while (true) {
+                    // Read the user data from console
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                    String content = reader.readLine();
 
-                        //Send the data to the client
-                        pout.println(content);
-                        pout.flush();
-                    }	
-                catch (Exception e) {
-                    e.printStackTrace();
+                    // Send the data to the client
+                    pout.println(content);
+                    pout.flush();
+
+                    // if client write exit then break the connection
+                    if (content.equals("exit")) {
+                        socket.close();
+                        break;
+                    }
                 }
+            } catch (Exception e) {
+                // e.printStackTrace();
+                System.out.println("Connection closed...!!!");
             }
         };
 
-         //Start the thread of startwriting
-         Thread t2 = new Thread(r2);
-         t2.start();
+        // Start the thread of startwriting
+        Thread t2 = new Thread(r2);
+        t2.start();
     }
 
     public static void main(String[] args) {
