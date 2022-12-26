@@ -1,26 +1,87 @@
 import java.net.*;
 import java.io.*;
 
-public class Client {
+import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
+import java.awt.*;
+
+import java.awt.Font;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+public class Client extends JFrame{
     Socket socket;
     BufferedReader br;
     PrintWriter pout;
 
+    //Declare Components
+    private JLabel heading = new JLabel("Client Area");
+    private JTextArea messagArea = new JTextArea();
+    private JTextField messageInput = new JTextField();
+    private Font font = new Font("Roboto", Font.PLAIN,20);
+
+    //constructor
     public Client() {
         try {
-            System.out.println("Sending request to server...");
-            socket = new Socket("127.0.0.1", 7777);
-            System.out.println("Connection done...");
+            // System.out.println("Sending request to server...");
+            // socket = new Socket("127.0.0.1", 7777);
+            // System.out.println("Connection done...");
 
-            br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            pout = new PrintWriter(socket.getOutputStream());
+            // br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            // pout = new PrintWriter(socket.getOutputStream());
+
+            //Build GUI for client side
+            createGUI();
+
+            //Handle Events
+            handleEvents();
 
             // Function for Read and write messages from server
-            startReading();
-            startWriting();
+            // startReading();
+            // startWriting();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    //Implementation of GUI
+    public void createGUI() {
+        this.setTitle("Client Messanger[END]");
+        this.setSize(600,600);
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        //Code for components
+        heading.setFont(font);
+        messagArea.setFont(font);
+        messageInput.setFont(font);
+
+        //Set heading to center position, border, image
+        heading.setIcon(new ImageIcon("chat.png"));
+        heading.setHorizontalTextPosition(SwingConstants.CENTER);
+        heading.setVerticalTextPosition(SwingConstants.BOTTOM);
+        heading.setHorizontalAlignment(SwingConstants.CENTER);
+        heading.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+
+        //Set messageinput text to center position, border
+        messageInput.setHorizontalAlignment(SwingConstants.CENTER);
+
+        //Set frame layout
+        this.setLayout(new BorderLayout());
+
+        //Adding the components to frame layout
+        this.add(heading, BorderLayout.NORTH);
+        this.add(messagArea, BorderLayout.CENTER);
+        this.add(messageInput, BorderLayout.SOUTH);
+
+        this.setVisible(true);
     }
 
     // Read the message from the server (Serversocket)
