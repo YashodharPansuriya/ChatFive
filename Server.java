@@ -51,6 +51,38 @@ class Server {
                 }
             }
         };
+
+        //Start the thread of startreading
+        Thread t1 = new Thread(r1);
+        t1.start();
+    }
+
+    // write the message to the client (socket)
+    public void startWriting() throws IOException {
+
+        // Thread -- Write the message to the client
+        Runnable r2 = () -> {
+
+            // write the infinit message to the client
+            while (true) {
+                try {
+                        //Read the user data from console
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+                        String content = reader.readLine();
+
+                        //Send the data to the client
+                        pout.println(content);
+                        pout.flush();
+                    }	
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+         //Start the thread of startwriting
+         Thread t2 = new Thread(r2);
+         t2.start();
     }
 
     public static void main(String[] args) {
